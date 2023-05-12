@@ -180,14 +180,15 @@ class HomepageActivity : BaseActivity() {
                         drinksAdapter.setOnClickListener(object : DrinkAdapter.OnItemClickListener{
                             override fun onItemSelected(Drink: Drink?, position: Int) {
 
-                                val cartItem = CartModel(
+                               /* val cartItem = CartModel(
                                     name = Drink!!.strDrink,
                                     price = Drink.idDrink.toDouble(),
                                     units = "1",
                                     imageUrl = Drink.strDrinkThumb
                                 )
+                                Toast.makeText(this@HomepageActivity, "Added to Cart", Toast.LENGTH_SHORT).show()
                                 addCartItem(cartItem)
-                                Log.d("onAddedItems",getCartItems().toString())
+                                Log.d("onAddedItems",getCartItems().toString())*/
                             }
                         })
 

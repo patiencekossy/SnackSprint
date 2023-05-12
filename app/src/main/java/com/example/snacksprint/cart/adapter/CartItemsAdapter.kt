@@ -38,6 +38,7 @@ class CartItemsAdapter  : RecyclerView.Adapter<CartItemsAdapter.MyViewHolder> {
             .load(imageUrl)
             .placeholder(R.drawable.famous)
             .into(holder.ivCocktail)
+
         holder.view.setOnClickListener { v: View? ->
             if (listener != null) {
                 listener!!.onItemSelected(menu, position)

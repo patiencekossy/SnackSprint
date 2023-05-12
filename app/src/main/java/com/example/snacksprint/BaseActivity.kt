@@ -13,11 +13,12 @@ import com.pixplicity.easyprefs.library.Prefs
 
 abstract class BaseActivity: AppCompatActivity() {
     var cartItemsList: MutableList<CartModel> = ArrayList()
+    private var cartModelList: MutableList<CartModel> = mutableListOf()
     private val gson = Gson()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Retrieve existing cart items from EasyPrefs
-        val cartItemsJson = Prefs.getString("cartItemsList", "")
+        val cartItemsJson = Prefs.getString("cartItemsList", cartItemsList.toString())
         cartItemsList = gson.fromJson(cartItemsJson, object : TypeToken<MutableList<CartModel>>() {}.type)
     }
 
