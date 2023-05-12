@@ -1,34 +1,53 @@
 package com.example.snacksprint.home_activity
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
+import androidx.datastore.dataStore
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.snacksprint.BaseActivity
 import com.example.snacksprint.R
+import com.example.snacksprint.SnackSprintApp
+import com.example.snacksprint.cart.data.CartItemsSerializer
+import com.example.snacksprint.cart.model.CartModel
 import com.example.snacksprint.home_activity.adapter.CategoryAdapter
 import com.example.snacksprint.home_activity.adapter.DrinkAdapter
 import com.example.snacksprint.home_activity.model.CategoryModel
 import com.example.snacksprint.home_activity.model.Drink
+import com.example.snacksprint.home_activity.model.TagResponseModelItem
 import com.example.snacksprint.network.ApiClientString
 import com.example.snacksprint.network.ApiInterface
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.collections.immutable.mutate
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class HomepageActivity : AppCompatActivity() {
+
+class HomepageActivity : BaseActivity() {
     //declare variables
     lateinit var drinksAdapter: DrinkAdapter
     lateinit var categoryAdapter: CategoryAdapter
     lateinit var rvCat: RecyclerView
     lateinit var rvPopular: RecyclerView
+    lateinit var tvCategoryLabel: TextView
     var categoryList: MutableList<CategoryModel> = ArrayList()
     var drinksList: MutableList<Drink> = ArrayList()
+    val Context.dataStore by dataStore("app-cart-items.json", CartItemsSerializer)
+    // Define a coroutine scope
+    val scope = CoroutineScope(Dispatchers.IO)
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +56,10 @@ class HomepageActivity : AppCompatActivity() {
         //init variables
         rvCat = findViewById(R.id.rvCat)
         rvPopular = findViewById(R.id.rvPopular)
+        tvCategoryLabel = findViewById(R.id.tvCategoryLabel)
+
         fetchCategories()
+        //fetchTags()
 
     }
 
@@ -67,15 +89,18 @@ class HomepageActivity : AppCompatActivity() {
                         //initialise the recyclerView and adapter
                         categoryAdapter = CategoryAdapter(categoryList, this@HomepageActivity)
                         //populate adapter
-                        rvCat.layoutManager = LinearLayoutManager(
-                            this@HomepageActivity,
-                            LinearLayoutManager.HORIZONTAL,
-                            false
-                        )
+                        rvCat.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.HORIZONTAL)
                         rvCat.adapter = categoryAdapter
 
+                        categoryAdapter.setOnClickListener(object : CategoryAdapter.OnItemClickListener {
+                            override fun onItemSelected(categoryModel: CategoryModel?, position: Int) {
+                                tvCategoryLabel.text = categoryModel?.title ?: "Popular Cocktails"
+                                categoryModel?.title?.let { fetchPopularCocktails(it) }
+                            }
+
+                        })
                         //fetchPopularCocktails from Api
-                        fetchPopularCocktails()
+                        fetchPopularCocktails("Cocktail")
 
                     }
                     else {
@@ -103,12 +128,11 @@ class HomepageActivity : AppCompatActivity() {
     }
 
 
-    private fun fetchPopularCocktails() {
-
+    private fun fetchPopularCocktails(filter: String) {
         //todo showProgress
         val apiInterface: ApiInterface =
             ApiClientString.getClient().create(ApiInterface::class.java)
-        val call: Call<String?>? = apiInterface.getDrinksPerCategoryList("Cocktail")
+        val call: Call<String?>? = apiInterface.getDrinksPerCategoryList(filter)
         call?.enqueue(object : Callback<String?> {
             override fun onResponse(
                 call: Call<String?>,
@@ -118,12 +142,14 @@ class HomepageActivity : AppCompatActivity() {
                     Log.d("onResponse", response.body().toString())
                     val categoryItemList: MutableList<CategoryModel> = ArrayList()
                     if (response.isSuccessful) {
-
+                        if (drinksList.size>0){
+                            drinksList.clear()
+                        }
                         val jsonObj = JSONObject(response.body().toString())
                         val drinksArray = jsonObj.optJSONArray("drinks")
                         Log.d("onResponseObj", jsonObj.optJSONArray("drinks")[0].toString())
                         if (drinksArray != null) {
-                            for (i in 0 until 10){
+                            for (i in 0 until drinksArray.length()){
                                 val drink = drinksArray.optJSONObject(i)
                                 drinksList.add(
                                     Drink(
@@ -141,6 +167,34 @@ class HomepageActivity : AppCompatActivity() {
                         //populate adapter
                         rvPopular.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
                         rvPopular.adapter = drinksAdapter
+
+
+                        drinksAdapter.setOnClickListener(object : DrinkAdapter.OnItemClickListener{
+                            override fun onItemSelected(Drink: Drink?, position: Int) {
+                                val cartModel = CartModel(
+                                    name = "Example Item",
+                                    price = 10.00,
+                                    units = "1",
+                                    imageUrl = "https://example.com/item.jpg"
+                                )
+                                /*val cartItem = CartModel(
+                                    name = Drink!!.strDrink,
+                                    price = Drink.idDrink.toDouble(),
+                                    quantity = 1,
+                                    imageUrl = Drink.strDrinkThumb
+                                )*/
+                                /*scope.launch {
+                                    dataStore.updateData {
+                                        it.copy(
+                                            cartItem = it.cartItem.mutate { cartModelList->
+                                                cartModelList.add(cartModel)
+                                            }
+                                        )
+                                    }
+                                }*/
+
+                            }
+                        })
 
                     } else {
                         Toast.makeText(
@@ -167,6 +221,35 @@ class HomepageActivity : AppCompatActivity() {
 
     }
 
+    private fun fetchTags(){
+        val apiInterface: ApiInterface = ApiClientString.getClient().create(ApiInterface::class.java)
+        val call: Call<String?>? = apiInterface.getCocktailTags()
+        call?.enqueue(object : Callback<String?>{
+            override fun onResponse(call: Call<String?>, response: Response<String?>) {
+                val json = response.body().toString()
+                Log.d("onResponse",response.body().toString())
+                val categories = Gson().fromJson<List<TagResponseModelItem>>(json, object : TypeToken<List<TagResponseModelItem>>() {}.type)
+                Log.d("onResponse",categories[0].name)
+                //initialise the recyclerView and adapter
+                //categoryAdapter = CategoryAdapter(categories, this@HomepageActivity)
+                //populate adapter
+                /* rvCat.layoutManager = LinearLayoutManager(
+                     this@HomepageActivity,
+                     LinearLayoutManager.HORIZONTAL,
+                     false
+                 )*/
+//                rvCat.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.HORIZONTAL)
+//                rvCat.adapter = categoryAdapter
+            }
+
+            override fun onFailure(call: Call<String?>, t: Throwable) {
+                Log.d("onFailure",t.message.toString())
+                Toast.makeText(this@HomepageActivity,t.localizedMessage,Toast.LENGTH_SHORT).show()
+            }
+
+        })
+
+    }
 
 
 }

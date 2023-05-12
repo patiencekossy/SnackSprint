@@ -12,4 +12,10 @@ import retrofit2.http.Query
         @GET("filter.php")
         fun getDrinksPerCategoryList(@Query("c") category: String?): Call<String?>?
 
+        @GET("/v1/tags")
+        fun getCocktailTags(): Call<String?>?
+
+        @GET("/v1/cocktails/tags")
+        fun getCocktailByTagId(@Query("filters") tagId: String?): Call<String?>?
+
     }

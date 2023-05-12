@@ -16,7 +16,7 @@ import com.example.snacksprint.home_activity.model.Drink
 
 class DrinkAdapter : RecyclerView.Adapter<DrinkAdapter.MyViewHolder> {
     var drinkList: List<Drink>? = null
-    private var listener: AdapterView.OnItemClickListener? = null
+    private var listener: OnItemClickListener? = null
     var context: Context? = null
 
     constructor(drinkList: List<Drink>?, context: Context) : super() {
@@ -39,9 +39,14 @@ class DrinkAdapter : RecyclerView.Adapter<DrinkAdapter.MyViewHolder> {
             .load(imageUrl)
             .placeholder(R.drawable.famous)
             .into(holder.ivCocktail)
+        holder.view.setOnClickListener { v: View? ->
+            if (listener != null) {
+                listener!!.onItemSelected(menu, position)
+            }
+        }
     }
 
-    fun setOnClickListener(listener: AdapterView.OnItemClickListener?) {
+    fun setOnClickListener(listener: OnItemClickListener?) {
         this.listener = listener
     }
 
@@ -54,6 +59,7 @@ class DrinkAdapter : RecyclerView.Adapter<DrinkAdapter.MyViewHolder> {
         var tvPrice: TextView = itemView.findViewById(R.id.tvPrice)
         var cvCart: CardView = itemView.findViewById(R.id.cvCart)
         var ivCocktail: ImageView = itemView.findViewById(R.id.ivCocktail)
+        var view: View = itemView
     }
 
     interface OnItemClickListener {

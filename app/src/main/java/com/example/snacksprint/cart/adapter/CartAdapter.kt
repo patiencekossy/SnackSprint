@@ -34,7 +34,7 @@ class CartAdapter(var context: Context):
         //bind
         val item = cartModel[position]
         tvname.text=item.name
-        tvprice.text = item.price
+        tvprice.text = item.price.toString()
 
         //
         Glide.with(context).load(item.imageUrl)

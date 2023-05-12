@@ -11,55 +11,50 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <LinearLayout
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/texthi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:orientation="vertical">
+                    android:layout_marginTop="20dp"
+                    android:text="Hi Kossy"
+                    android:textColor="@color/black"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    />
 
-                    <TextView
-                        android:id="@+id/texthi"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="Hi Kossy"
-                        android:textColor="@color/black"
-                        android:textSize="24sp"
-                        android:textStyle="bold"
-                        />
-
-                    <TextView
-                        android:id="@+id/textoder"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text="Eat and Drink"
-                        android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/textoder"
+                    android:layout_below="@+id/texthi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Eat and Drink"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:layout_width="58dp"
                     android:layout_height="36dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="100dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginTop="20dp"
                     android:src="@drawable/ic_shopping_cart_24" />
-            </LinearLayout>
+
+            </RelativeLayout>
+
 
             <EditText
                 android:id="@+id/search_view"
@@ -72,12 +67,22 @@
                 android:iconifiedByDefault="false"
                 android:queryHint="Search" />
 
-
-            <ImageView
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="20dp"
-                android:src="@drawable/hurricane" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:elevation="10dp"
+                app:cardElevation="10dp"
+                app:cardCornerRadius="15dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="20dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_banner" />
+
+            </androidx.cardview.widget.CardView>
+
 
             <TextView
                 android:id="@+id/tvCategories"
