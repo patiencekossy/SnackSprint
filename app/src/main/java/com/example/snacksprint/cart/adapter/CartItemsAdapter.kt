@@ -65,4 +65,6 @@ class CartItemsAdapter  : RecyclerView.Adapter<CartItemsAdapter.MyViewHolder> {
     interface OnItemClickListener {
         fun onItemSelected(cartModel: CartModel, position: Int)
     }
+
+
 }

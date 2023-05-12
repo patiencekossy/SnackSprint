@@ -1,10 +1,12 @@
 package com.example.snacksprint
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.snacksprint.cart.model.CartModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -15,6 +17,7 @@ abstract class BaseActivity: AppCompatActivity() {
     var cartItemsList: MutableList<CartModel> = ArrayList()
     private var cartModelList: MutableList<CartModel> = mutableListOf()
     private val gson = Gson()
+    private var progress: SweetAlertDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Retrieve existing cart items from EasyPrefs
@@ -24,6 +27,20 @@ abstract class BaseActivity: AppCompatActivity() {
 
     fun showToast(msg: String,context: Context) {
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    fun showProgress(){
+        progress = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        progress!!.progressHelper.barColor = Color.parseColor("#A5DC86");
+        progress!!.titleText = "Loading";
+        progress!!.setCancelable(false);
+        progress!!.show();
+    }
+
+    fun dismissProgress(){
+        if (progress!= null){
+            progress!!.dismiss()
+        }
     }
 
     fun addCartItem(cartModel: CartModel) {

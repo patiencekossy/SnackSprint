@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -17,6 +16,7 @@ import com.example.snacksprint.cart.model.CartModel
 import com.example.snacksprint.home_activity.model.Drink
 import com.google.gson.Gson
 import com.pixplicity.easyprefs.library.Prefs
+import java.text.DecimalFormat
 
 
 class DrinkAdapter : RecyclerView.Adapter<DrinkAdapter.MyViewHolder> {
@@ -41,8 +41,9 @@ class DrinkAdapter : RecyclerView.Adapter<DrinkAdapter.MyViewHolder> {
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val menu = drinkList!![position]
         val imageUrl = menu.strDrinkThumb
+        val price = formatNumber(menu.idDrink.toInt())
         holder.tvTitle.text = menu.strDrink
-        holder.tvPrice.text = "Kes ${menu.idDrink} /="
+        holder.tvPrice.text = "Kes $price"
         Glide.with(holder.itemView)
             .load(imageUrl)
             .placeholder(R.drawable.famous)
@@ -56,7 +57,7 @@ class DrinkAdapter : RecyclerView.Adapter<DrinkAdapter.MyViewHolder> {
         holder.cvAddCart.setOnClickListener {
             val cartItem = CartModel(
                 name = menu.strDrink,
-                price = menu.idDrink.toDouble(),
+                price = price,
                 units = "1",
                 imageUrl = menu.strDrinkThumb
             )
@@ -85,17 +86,16 @@ class DrinkAdapter : RecyclerView.Adapter<DrinkAdapter.MyViewHolder> {
         fun onItemSelected(Drink: Drink?, position: Int)
     }
 
-    fun addCartItem(cartModel: CartModel) {
-        if (!cartModelList.contains(cartModel)) {
+    private fun addCartItem(cartModel: CartModel) {
+        val existingItem = cartModelList.find { it.name == cartModel.name }
+        if (existingItem == null) {
             // Add the new cart item
             cartModelList.add(cartModel)
         } else {
             Log.d("onCartError", "${cartModel.name} has already been added to the list!")
         }
-
         // Convert the updated list to JSON string
         val updatedCartItemsJson = gson.toJson(cartModelList)
-
         // Store the updated list in EasyPrefs
         Prefs.putString("cartItemsList", updatedCartItemsJson)
     }
@@ -103,4 +103,20 @@ class DrinkAdapter : RecyclerView.Adapter<DrinkAdapter.MyViewHolder> {
     private fun getCartItems(): MutableList<CartModel> {
         return cartModelList
     }
+
+    private fun formatNumber(price: Int): String{
+        val formPrice = price/10
+        var fmamo = "0.00"
+        try {
+            val amou = formPrice.toDouble()
+            if (amou > 0) {
+                val df = DecimalFormat("#,###.00")
+                fmamo = df.format(amou)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return fmamo
+    }
+
 }

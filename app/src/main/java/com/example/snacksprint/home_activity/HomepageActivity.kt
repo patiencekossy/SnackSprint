@@ -72,7 +72,7 @@ class HomepageActivity : BaseActivity() {
     }
 
     private fun fetchCategories() {
-        //todo showProgress
+        showProgress()
         val apiInterface: ApiInterface =
             ApiClientString.getClient().create(ApiInterface::class.java)
         val call: Call<String?>? = apiInterface.getCategoryList("list")
@@ -125,6 +125,7 @@ class HomepageActivity : BaseActivity() {
             }
 
             override fun onFailure(call: Call<String?>, t: Throwable) {
+                dismissProgress()
                 Toast.makeText(
                     this@HomepageActivity,
                     "Sorry something went wrong while processing your request",
@@ -137,7 +138,6 @@ class HomepageActivity : BaseActivity() {
 
 
     private fun fetchPopularCocktails(filter: String) {
-        //todo showProgress
         val apiInterface: ApiInterface =
             ApiClientString.getClient().create(ApiInterface::class.java)
         val call: Call<String?>? = apiInterface.getDrinksPerCategoryList(filter)
@@ -146,6 +146,7 @@ class HomepageActivity : BaseActivity() {
                 call: Call<String?>,
                 response: Response<String?>
             ) {
+                dismissProgress()
                 try {
                     Log.d("onResponse", response.body().toString())
                     val categoryItemList: MutableList<CategoryModel> = ArrayList()
@@ -206,6 +207,7 @@ class HomepageActivity : BaseActivity() {
             }
 
             override fun onFailure(call: Call<String?>, t: Throwable) {
+                dismissProgress()
                 Toast.makeText(
                     this@HomepageActivity,
                     "Sorry something went wrong while processing your request",
