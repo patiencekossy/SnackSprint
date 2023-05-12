@@ -25,12 +25,12 @@ class CartAdapter(var context: Context):
     }
     //so far item view is same as single item
     override fun onBindViewHolder(holder: CartAdapter.ViewHolder, position: Int) {
-        val  tvname= holder.itemView.findViewById(R.id.tvname) as TextView
+        /*val  tvname= holder.itemView.findViewById(R.id.tvname) as TextView
         val tvprice = holder.itemView.findViewById(R.id.tvPrice) as TextView
-        val image_url = holder.itemView.findViewById(R.id.image_url) as ImageView
+        val image_url = holder.itemView.findViewById(R.id.image_url) as ImageView*/
 
 
-
+/*
         //bind
         val item = cartModel[position]
         tvname.text=item.name
@@ -41,7 +41,7 @@ class CartAdapter(var context: Context):
             .apply(RequestOptions().centerCrop())
             .into(image_url)
 
-        //image.setImageResource(item.image)
+        //image.setImageResource(item.image)*/
 
     }
     override fun getItemCount(): Int { //count the number items coming from the API

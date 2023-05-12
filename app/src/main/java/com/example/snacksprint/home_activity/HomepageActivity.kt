@@ -2,9 +2,11 @@ package com.example.snacksprint.home_activity
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.datastore.dataStore
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.snacksprint.BaseActivity
 import com.example.snacksprint.R
 import com.example.snacksprint.SnackSprintApp
+import com.example.snacksprint.cart.CartActivity
 import com.example.snacksprint.cart.data.CartItemsSerializer
 import com.example.snacksprint.cart.model.CartModel
 import com.example.snacksprint.home_activity.adapter.CategoryAdapter
@@ -43,6 +46,7 @@ class HomepageActivity : BaseActivity() {
     lateinit var rvCat: RecyclerView
     lateinit var rvPopular: RecyclerView
     lateinit var tvCategoryLabel: TextView
+    lateinit var ivCart: ImageView
     var categoryList: MutableList<CategoryModel> = ArrayList()
     var drinksList: MutableList<Drink> = ArrayList()
     val Context.dataStore by dataStore("app-cart-items.json", CartItemsSerializer)
@@ -57,6 +61,10 @@ class HomepageActivity : BaseActivity() {
         rvCat = findViewById(R.id.rvCat)
         rvPopular = findViewById(R.id.rvPopular)
         tvCategoryLabel = findViewById(R.id.tvCategoryLabel)
+        ivCart = findViewById(R.id.ivCart)
+        ivCart.setOnClickListener {
+            startActivity(Intent(this@HomepageActivity,CartActivity::class.java))
+        }
 
         fetchCategories()
         //fetchTags()
@@ -171,28 +179,15 @@ class HomepageActivity : BaseActivity() {
 
                         drinksAdapter.setOnClickListener(object : DrinkAdapter.OnItemClickListener{
                             override fun onItemSelected(Drink: Drink?, position: Int) {
-                                val cartModel = CartModel(
-                                    name = "Example Item",
-                                    price = 10.00,
-                                    units = "1",
-                                    imageUrl = "https://example.com/item.jpg"
-                                )
-                                /*val cartItem = CartModel(
+
+                                val cartItem = CartModel(
                                     name = Drink!!.strDrink,
                                     price = Drink.idDrink.toDouble(),
-                                    quantity = 1,
+                                    units = "1",
                                     imageUrl = Drink.strDrinkThumb
-                                )*/
-                                /*scope.launch {
-                                    dataStore.updateData {
-                                        it.copy(
-                                            cartItem = it.cartItem.mutate { cartModelList->
-                                                cartModelList.add(cartModel)
-                                            }
-                                        )
-                                    }
-                                }*/
-
+                                )
+                                addCartItem(cartItem)
+                                Log.d("onAddedItems",getCartItems().toString())
                             }
                         })
 

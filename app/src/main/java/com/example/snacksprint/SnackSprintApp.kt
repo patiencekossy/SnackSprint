@@ -1,11 +1,19 @@
 package com.example.snacksprint
 
 import android.app.Application
+import android.content.ContextWrapper
+import com.pixplicity.easyprefs.library.Prefs
 
 class SnackSprintApp: Application() {
-    //lateinit var appDatabase : AppDatabase
+
     override fun onCreate() {
         super.onCreate()
-        // appDatabase = AppDatabase.getDatabase(this)
+        Prefs.Builder()
+            .setContext(this)
+            .setMode(ContextWrapper.MODE_PRIVATE)
+            .setPrefsName(packageName)
+            .setUseDefaultSharedPreference(true)
+            .build()
     }
+
 }
