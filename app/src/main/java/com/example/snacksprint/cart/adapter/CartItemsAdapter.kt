@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.snacksprint.R
 import com.example.snacksprint.cart.model.CartModel
 import com.example.snacksprint.home_activity.model.Drink
+import java.text.DecimalFormat
 
 class CartItemsAdapter  : RecyclerView.Adapter<CartItemsAdapter.MyViewHolder> {
     var cartList: List<CartModel>? = null
@@ -32,8 +33,9 @@ class CartItemsAdapter  : RecyclerView.Adapter<CartItemsAdapter.MyViewHolder> {
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val menu = cartList!![position]
         val imageUrl = menu.imageUrl
+        val cost = formatNumber(menu.price.toInt())
         holder.tvTitle.text = menu.name
-        holder.tvPrice.text = "Kes ${menu.price} /="
+        holder.tvPrice.text = "Kes $cost /="
         Glide.with(holder.itemView)
             .load(imageUrl)
             .placeholder(R.drawable.famous)
@@ -66,5 +68,18 @@ class CartItemsAdapter  : RecyclerView.Adapter<CartItemsAdapter.MyViewHolder> {
         fun onItemSelected(cartModel: CartModel, position: Int)
     }
 
-
+    private fun formatNumber(price: Int): String{
+        val formPrice = price/10
+        var fmamo = "0.00"
+        try {
+            val amou = formPrice.toDouble()
+            if (amou > 0) {
+                val df = DecimalFormat("#,###.00")
+                fmamo = df.format(amou)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return fmamo
+    }
 }

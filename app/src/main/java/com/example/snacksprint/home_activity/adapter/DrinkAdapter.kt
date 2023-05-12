@@ -57,7 +57,7 @@ class DrinkAdapter : RecyclerView.Adapter<DrinkAdapter.MyViewHolder> {
         holder.cvAddCart.setOnClickListener {
             val cartItem = CartModel(
                 name = menu.strDrink,
-                price = price,
+                price = menu.idDrink,
                 units = "1",
                 imageUrl = menu.strDrinkThumb
             )
